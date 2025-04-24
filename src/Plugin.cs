@@ -3,25 +3,43 @@ using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
 
-namespace FontPatcher;
+namespace FontUpdate;
 
 class PluginInfo
 {
-    public const string GUID = "lekakid.lcfontpatcher";
-    public const string Name = MyPluginInfo.PLUGIN_NAME;
-    public const string Version = MyPluginInfo.PLUGIN_VERSION;
+    public const string GUID = "rectorado.FontUpdate";
+    public const string Name = "FontUpdate";
+    public const string Version = "0.6.5";
+}
+
+public enum FontMode
+{
+    Normal,
+    NoDollar
+}
+
+public static class FontRegexPatterns
+{
+    public const string NormalRegexPattern = @"^(b|DialogueText|3270.*)$";
+    public const string NoDollarRegexPattern = @"^(b|DialogueText|3270.*)$";
+    public const string TransmitRegexPattern = @"^edunline.*$";
+}
+
+public static class FontPaths
+{
+    public const string FontAssetPath = @"FontUpdate";
 }
 
 [BepInPlugin(PluginInfo.GUID, PluginInfo.Name, PluginInfo.Version)]
 class Plugin : BaseUnityPlugin
 {
+    // font-related configurations
     public static ConfigEntry<bool> configNormalIngameFont;
     public static ConfigEntry<bool> configTransmitIngameFont;
-    public static ConfigEntry<string> configNormalRegexPattern;
-    public static ConfigEntry<string> configTransmitRegexPattern;
-    public static ConfigEntry<string> configFontAssetPath;
-    public static ConfigEntry<bool> configDebugLog;
+    public static ConfigEntry<FontMode> configFontMode;
 
+    // debug-related configurations
+    public static ConfigEntry<bool> configDebugLog;
     public static Plugin Instance;
 
     private void Awake()
@@ -31,45 +49,35 @@ class Plugin : BaseUnityPlugin
             Instance = this;
         }
 
+        configFontMode = Config.Bind(
+            "General",
+            "FontMode",
+            FontMode.Normal,
+            "Normal: Updated font, NoDollar: Updated font without dollar sign, might fix some compatibility issues with other mods"
+        );
+
         configNormalIngameFont = Config.Bind(
             "General",
-            "UsingNormalIngameFont",
-            true,
-            "Using in-game default normal font"
+            "Use Default Font",
+            false,
+            "Uses the vanilla font, mainly for testing purposes"
         );
 
         configTransmitIngameFont = Config.Bind(
             "General",
             "UsingTransmitIngameFont",
             true,
-            "Using in-game default normal font"
+            "Uses the vanilla font, don't deactivate this as it will break the font"
         );
 
-        configNormalRegexPattern = Config.Bind(
-            "Regex",
-            "NormalFontNameRegex",
-            @"^(b|DialogueText|3270.*)$",
-            "Normally, you don't neet to change it"
-        );
 
-        configTransmitRegexPattern = Config.Bind(
-            "Regex",
-            "TransmitFontNameRegex",
-            @"^edunline.*$",
-            "Normally, you don't neet to change it"
-        );
 
-        configFontAssetPath = Config.Bind(
-            "Path",
-            "FontAssetsPath",
-            @"FontPatcher\default"
-        );
-
-        configDebugLog = Config.Bind(
-            "Debug",
-            "Log",
-            false
-        );
+configDebugLog = Config.Bind(
+    "Debug",
+    "Log",
+    false,
+    new ConfigDescription("")
+);
 
         FontLoader.Load();
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());

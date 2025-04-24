@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyName>FontPatcher</AssemblyName>
-    <Description>Replace in-game font with other things</Description>
-    <Version>1.2.4</Version>
-    <Authors>LeKAKiD</Authors>
-    <RootNamespace>FontPatcher</RootNamespace>
+    <AssemblyName>FontUpdate</AssemblyName>
+    <Description>Updates LC's font, adding the expanded latin unicode characters list.</Description>
+    <Version>0.6.0</Version>
+    <Authors>rectorado</Authors>
+    <RootNamespace>FontUpdate</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RestoreAdditionalProjectSources>
       https://api.nuget.org/v3/index.json;

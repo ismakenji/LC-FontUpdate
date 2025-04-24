@@ -7,7 +7,7 @@ using UnityEngine;
 using TMPro;
 using HarmonyLib;
 
-namespace FontPatcher;
+namespace FontUpdate;
 
 [HarmonyPatch]
 class FontLoader
@@ -16,19 +16,21 @@ class FontLoader
     {
         public string BundleName;
         public TMP_FontAsset Normal;
+        public TMP_FontAsset NoDollar;
         public TMP_FontAsset Transmit;
     }
 
     static List<FontBundle> fontBundles = new();
     static Regex normalRegex;
     static Regex transmitRegex;
+    static Regex noDollarRegex;
 
     public static void Load()
     {
         try
         {
             string configPath = Path.GetDirectoryName(Plugin.Instance.Config.ConfigFilePath);
-            string fontsPath = Path.Combine(configPath, Plugin.configFontAssetPath.Value);
+            string fontsPath = Path.Combine(configPath, FontPaths.FontAssetPath);
             Plugin.LogInfo($"Font path: {fontsPath}");
 
             DirectoryInfo di = new DirectoryInfo(fontsPath);
@@ -46,6 +48,7 @@ class FontLoader
                     FontBundle tmp = new()
                     {
                         Normal = bundle.LoadAsset<TMP_FontAsset>(ResourcePath.NormalFont),
+                        NoDollar = bundle.LoadAsset<TMP_FontAsset>(ResourcePath.NoDollarFont),
                         Transmit = bundle.LoadAsset<TMP_FontAsset>(ResourcePath.TransmitFont)
                     };
 
@@ -77,8 +80,9 @@ class FontLoader
                 }
             }
 
-            normalRegex = new Regex(Plugin.configNormalRegexPattern.Value);
-            transmitRegex = new Regex(Plugin.configTransmitRegexPattern.Value);
+            normalRegex = new Regex(FontRegexPatterns.NormalRegexPattern);
+            noDollarRegex = new Regex(FontRegexPatterns.NoDollarRegexPattern);
+            transmitRegex = new Regex(FontRegexPatterns.TransmitRegexPattern);
 
             StringBuilder stringBuilder = new();
             stringBuilder.Append($"{sucessCount} fonts loaded");
@@ -94,11 +98,11 @@ class FontLoader
     [HarmonyPrefix, HarmonyPatch(typeof(TMP_FontAsset), "Awake")]
     static void PatchFontAwake(TMP_FontAsset __instance)
     {
-        __instance.material.SetFloat("_UnderlayDilate", 1f);
-        __instance.material.SetFloat("_UnderlayOffsetX", 0.1f);
+        __instance.material.SetFloat("_UnderlayDilate", 0.8f);
+        __instance.material.SetFloat("_UnderlayOffsetX", 0.01f);
         string fontName = __instance.name;
 
-        if (normalRegex.IsMatch(fontName))
+        if (Plugin.configFontMode.Value == FontMode.Normal && normalRegex.IsMatch(fontName))
         {
             if (!Plugin.configNormalIngameFont.Value)
             {
@@ -118,6 +122,25 @@ class FontLoader
             if (patchCount > 0)
             {
                 Plugin.LogInfo($"[{fontName}] font patched (Normal)");
+            }
+            return;
+        }
+
+        if (Plugin.configFontMode.Value == FontMode.NoDollar && noDollarRegex.IsMatch(fontName))
+        {
+            int patchCount = 0;
+            foreach (FontBundle bundle in fontBundles)
+            {
+                if (!bundle.NoDollar) continue;
+                if (__instance.fallbackFontAssetTable.Contains(bundle.NoDollar)) continue;
+
+                __instance.fallbackFontAssetTable.Add(bundle.NoDollar);
+                patchCount += 1;
+            }
+
+            if (patchCount > 0)
+            {
+                Plugin.LogInfo($"[{fontName}] font patched (NoDollar)");
             }
             return;
         }
