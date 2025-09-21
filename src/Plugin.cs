@@ -37,6 +37,7 @@ class Plugin : BaseUnityPlugin
     public static ConfigEntry<bool> configNormalIngameFont;
     public static ConfigEntry<bool> configTransmitIngameFont;
     public static ConfigEntry<FontMode> configFontMode;
+    public static ConfigEntry<int> configChatCharacterLimit;
 
     // debug-related configurations
     public static ConfigEntry<bool> configDebugLog;
@@ -70,6 +71,12 @@ class Plugin : BaseUnityPlugin
             "Uses the vanilla font, don't deactivate this as it will break the font"
         );
 
+        configChatCharacterLimit = Config.Bind(
+            "General",
+            "ChatCharacterLimit",
+            50,
+            "Set the character limit for chat messages, set to -1 for unlimited"
+        );
 
 
 configDebugLog = Config.Bind(

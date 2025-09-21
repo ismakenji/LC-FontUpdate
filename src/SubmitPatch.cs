@@ -20,7 +20,8 @@ class HUDManagerPatch
     static void OnSubmitChat(string chatString)
     {
         var localPlayer = GameNetworkManager.Instance.localPlayerController;
-        if (!string.IsNullOrEmpty(chatString) && chatString.Length < 50)
+        int chatLimit = FontUpdate.Plugin.configChatCharacterLimit.Value;
+        if (!string.IsNullOrEmpty(chatString) && (chatLimit < 0 || chatString.Length <= chatLimit))
         {
             HUDManager.Instance.AddTextToChatOnServer(chatString, (int)localPlayer.playerClientId);
         }
