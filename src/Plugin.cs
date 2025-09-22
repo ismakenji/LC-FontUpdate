@@ -53,8 +53,14 @@ class Plugin : BaseUnityPlugin
         configFontMode = Config.Bind(
             "General",
             "FontMode",
-            FontMode.Normal,
-            "Normal: Updated font, NoDollar: Updated font without dollar sign, might fix some compatibility issues with other mods"
+            FontMode.NoDollar,
+            "NoDollar: Updated font without dollar sign, like vanilla. Normal: Updated font with dollar sign."
+        );
+   configChatCharacterLimit = Config.Bind(
+            "General",
+            "Chat Character Limit",
+            50,
+            "Sets a character limit to the chat, set to -1 to have it unlimited."
         );
 
         configNormalIngameFont = Config.Bind(
@@ -69,13 +75,6 @@ class Plugin : BaseUnityPlugin
             "UsingTransmitIngameFont",
             true,
             "Uses the vanilla font, don't deactivate this as it will break the font"
-        );
-
-        configChatCharacterLimit = Config.Bind(
-            "General",
-            "ChatCharacterLimit",
-            50,
-            "Set the character limit for chat messages, set to -1 for unlimited"
         );
 
 
