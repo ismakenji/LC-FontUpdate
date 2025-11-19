@@ -4,7 +4,7 @@
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>FontUpdate</AssemblyName>
     <Description>Updates LC's font, adding the expanded latin unicode characters list.</Description>
-    <Version>0.6.0</Version>
+    <Version>0.8.2</Version>
     <Authors>rectorado</Authors>
     <RootNamespace>FontUpdate</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

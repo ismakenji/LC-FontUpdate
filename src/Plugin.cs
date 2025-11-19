@@ -9,7 +9,7 @@ class PluginInfo
 {
     public const string GUID = "rectorado.FontUpdate";
     public const string Name = "FontUpdate";
-    public const string Version = "0.6.5";
+    public const string Version = "0.8.2";
 }
 
 public enum FontMode
